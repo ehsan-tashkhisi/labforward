@@ -28,13 +28,13 @@ create separate branch for each feature.
 Apart from other validations we have strict validation for creating Item in a category. Item should have all
 required attribute in that category And types of values for each of ItemAttribute for Item should adhere to 
 type of corresponding attribute, no item can be saved if any constraint violated. AttributeValidationManager is written
-in a way that make attribute validation based on their metadata very easy adn it can be extended.
+in a way that make attribute validation based on their metadata very easy ann it can be extended.
 
 ValueTypes in our system is just an Enum in Java (although we can change it in the future), defining new valueType is
 just a matter of adding new type to that enum. Each time we define new ValueType we should define its validator 
 by implementing ValueTypeValidator Interface. If we want to save value for valueType that has no associated valueType
-NoValueTypeRegistered exception will be thrown. In the future we can also check existence of Validator for each valueType
-during startup. or simple test case, but this should be considered on crating new item too.
+NoValueTypeValidator exception will be thrown. In the future we can also check existence of Validator for each valueType
+during startup or simple test case, but this should be considered on crating new item too.
 
 ## How to run
 
@@ -58,7 +58,7 @@ in http://localhost:8080/swagger-ui.html.
 # Future works
 Cucumber is great for BDD, but it does not work well for API testing if I had enough time I would use 
 some other tools like Postman to test my API in a better way, Also I have not tested body and all headers
-of the response in my Cucumber features. it would be great to test them too. 
+of the response in my Cucumber features. It would be great to test them too. 
 
 I am also used to create separate branch for each feature but here for simplicity I worked on master branch.
 
@@ -77,10 +77,10 @@ How we want to generate report from our data.
 We should have better approach for running test in maven. Right now I am just running them in intellij IDEA,
 but we should have plan to group tests to be run in different stages in our CI/CD.
 
-Having Separate table for valueTypes is that good?
+Having Separate table for valueTypes, is that good?
 
 # Cucumber Test Features
-Developing using BDD methodology I have define some scenario like below that are passed
+Developing using BDD methodology I have defined some scenario like below that are passed.
 I believe that nothing is more descriptive than putting them here:
 
 # Feature: Create AttributeType
