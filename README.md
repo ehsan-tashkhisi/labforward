@@ -81,7 +81,7 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       NAME               | FAILS          |               | INTEGER   | METER    |
       | WITH ALL REQUIRED FIELDS         | IS SUCCESSFUL  | Category1     | DOUBLE    | DOLOR    |
 
-#Feature: Create AttributeType
+# Feature: Create AttributeType
 
 Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
 
@@ -107,7 +107,7 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       NAME               | FAILS          |               | INTEGER   | METER    |
       | WITH ALL REQUIRED FIELDS         | IS SUCCESSFUL  | Category1     | DOUBLE    | DOLOR    |
 
-#Feature: Create Category
+# Feature: Create Category
 
 Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
 
