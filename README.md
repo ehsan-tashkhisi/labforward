@@ -39,15 +39,13 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-## Usage
+## Usage And API Documentation
 
 For using this application after submitting previous commands you can access OPEN API 3
 documentation for its api under http://localhost:8080/v3/api-docs/
 
 Also, for testing and working with the api you can use swagger-ui which is available 
 in http://localhost:8080/swagger-ui.html.
-
-## Usage
 
 
 
@@ -288,6 +286,10 @@ Scenario Outline: <testCase> <expectedResult>
       | WITH          ALL ATTRIBUTE          | IS SUCCESSFUL  | 1            | 400      | 2            | title  |
 
 # Reports for cucumber Scenario Tests
+
+You can see Complete report in the following link:
+
+https://ehsan-tashkhisi.github.io/
 
 ![alt text](https://www.linkpicture.com/q/cucumber-scenario.png)
 
