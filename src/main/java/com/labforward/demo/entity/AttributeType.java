@@ -24,7 +24,6 @@ public class AttributeType {
     private ValueType valueType;
 
     @Enumerated(EnumType.STRING)
-
     private UnitType unitType;
 
     @Override
