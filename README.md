@@ -292,3 +292,5 @@ Scenario Outline: <testCase> <expectedResult>
 ![alt text](https://www.linkpicture.com/q/cucumber-scenario.png)
 
 ![alt text](https://www.linkpicture.com/q/scnario-chart.png)
+
+![alt text](https://www.linkpicture.com/q/cucumber-scenario-test.png)
