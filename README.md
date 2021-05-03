@@ -2,22 +2,25 @@
 
 This is the sample project for managing different kinds of items with different categories in Labforward. Each item
 belongs to a category and can have attributes in that category. We should first define Categories which have some
-attribute then we create and add item to those categories. Item Category can not be changed during its life cycle so
+attributes then we create and add item to those categories. Item's Category can not be changed during its lifetime so
 each item can belongs only to one category during its lifetime. Each Category has a specific name and id and a set of
-attributes of different types. attribute type is also another entity which has valueType (eg:INTEGER, STRING,
-DOUBLE,...) and unitType (eg:METER, DOLOR, ...). So first we define our category and then add attribute to a defined
-category. Following is data model for our app. some constrain are not in place for future changes,
-for instance in the future maybe we need to maintain previous value for each itemAttributes, so it has its own primary key.
+attributes of different types. attribute type is also another entity which has a valueType (eg:INTEGER, STRING,
+DOUBLE,...) and a unitType (eg:METER, DOLOR, ...). So first we define our category and then add attribute to a defined
+category Then we create Item in that Category. Following is data model for our app. Some constrains are not in place 
+for future changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, 
+so it has its own primary key.
 
-In this data model all value are stored in varchar but validation is in place in our application, so all valueType will
-be saved in their valid format but indexing and searching this value will be difficult in the future we can
-define separate table for each ValueType, but we should consider all constraint and use cases.
+In this data model all values of valueType are stored in varchar but validation is in place in our application, 
+so all valueType will be saved in their valid format but indexing and searching this value will be difficult in the future we can
+define separate tables for each ValueType, but we should consider all constraints in that case.
 
 ![alt text](https://www.linkpicture.com/q/data-model.png)
 
 For th sake of simplicity I have used h2 in memory database but changing our database is just a matter of changing configuration in
 application.properties file.
 
+I did not use separate branch for each feature, and I worked on master branch. In real situation I always
+create separate branch for each feature.
 
 ## Validation
 
@@ -47,7 +50,27 @@ documentation for its api under http://localhost:8080/v3/api-docs/
 Also, for testing and working with the api you can use swagger-ui which is available 
 in http://localhost:8080/swagger-ui.html.
 
+# Future works
+Cucumber is great for BDD, but it does not work well for API testing if I had enough time I would use 
+some other tools like Postman to test my API in a better way, Also I have not tested body and all headers
+of the response in my Cucumber features. it would be great to test them too. 
 
+I am also used to create separate branch for each feature but here for simplicity I worked on master branch.
+
+Sometimes I try to consider other approaches like document based database or NoSql depending on the requirements.
+
+To my mind we can Also have more Unit Tests to make sure each individual unit works properly.
+
+Considering MapStruct for Converting DTOs to entity would be great. 
+
+We should Think about locking mechanist to ensure no data loss in some parts.
+
+How we want to generate report from our data.
+
+We should have better approach for running test in maven. Right now I am just running them in intellij IDEA,
+but we should have plan to group tests to be run in different stages in our CI/CD.
+
+Having Separate table for valueTypes is that good?
 
 ![alt text](https://www.linkpicture.com/q/swagger.png)
 
