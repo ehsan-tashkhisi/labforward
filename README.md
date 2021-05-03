@@ -47,8 +47,8 @@ mvn spring-boot:run
 
 ## Usage And API Documentation
 
-For using this application after submitting previous commands you can access OPEN API 3
-documentation for its api under http://localhost:8080/v3/api-docs/
+For using this application after submitting previous commands you can access OpenApi version 3
+specification for its API under http://localhost:8080/v3/api-docs/
 
 Also, for testing and working with the api you can use swagger-ui which is available 
 in http://localhost:8080/swagger-ui.html.
