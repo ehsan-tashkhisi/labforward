@@ -18,7 +18,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "3000")})
     @Query("SELECT i FROM Item i LEFT JOIN ItemAttribute ia on i.id = ia.item.id  WHERE i.id=:itemId")
-    @Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     Optional<Item> findItemByIdForUpdate(@Param("itemId") Long itemId);
 
     Page<Item> findByCategory(Category category, Pageable pageable);
