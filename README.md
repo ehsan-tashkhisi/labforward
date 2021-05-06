@@ -1,24 +1,38 @@
 # How it works
 
 This is the sample project for managing different kinds of items with different categories in Labforward. Each item
-belongs to a category and can have attributes in that category. We should first define Categories which have some
-attributes then we create and add item to those categories. Item's Category can not be changed during its lifetime so
-each item can belongs only to one category during its lifetime. Each Category has a specific name and id and a set of
-attributes of different types. attribute type is also another entity which has a valueType (eg:INTEGER, STRING,
-DOUBLE,...) and a unitType (eg:METER, DOLOR, ...). So first we define our category and then add attribute to a defined
-category Then we create Item in that Category. Following is data model for our app. Some constrains are not in place 
-for future changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, 
+belongs to a category and can have attributes in that category. We should first define AttributeTypes which has a
+valueType (eg:INTEGER, STRING, DOUBLE,...) and a unitType (eg:METER, DOLOR, ...) (using API grouped as AttributeTypes). 
+then we define Category with specific name, after that we add attributes(with AttributeTypes we defined earlier) to that category
+(using API grouped as Category Attributes) Then After we add item into that category(Using API grouped as Item).
+Item's Category can not be changed during its lifetime so each item can belongs only to one category during its lifetime.
+Some constrains are not in place for future changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, 
 so it has its own primary key. On the other hand AttributeType is better not to be exposed to the end users,
 and I did not handle their response code in the best way. The instances of this entity is better to be created by administrator
 and Developers.
 In this data model all values of valueType are stored in varchar but validation is in place in our application, 
 so all valueType will be saved in their valid format but indexing and searching this value will be difficult in the future we can
-define separate tables for each ValueType, but we should consider all constraints in that case.
+define separate tables for each ValueType, however, we should consider all constraints in that case.
+
+Special care should be taken on when we want to add attribute to Category. We should decide to let the user add
+attribute to the category even after an item is created for that category, or we can only add attribute to the category
+only if it has no item. Right now we let the user add attribute to the category even when there is an item in that 
+category. This lets some item in our category to not have some of required item, however, it gives us some flexibility.
+We can also have default value for those attribute in the future or even don't let the user add attribute to the category
+that already has item in it.
+
+For updating item right now we don't have any HTTP PATCH like operation, in other words we don't support updating
+the item partially. We have provided PUT operation, so the clients of our API should provide all the
+attributes for the item being updated in the body of the request, and if she does not provide all required attributes for 
+item in associated category, 404 bad request with corresponding errors in the body will returns. 
+In the future we can support HTTP PATCH operation for partial modification.
 
 ![alt text](https://www.linkpicture.com/q/data-model.png)
 
-For th sake of simplicity I have used h2 in memory database but changing our database is just a matter of changing configuration in
-application.properties file.
+For the sake of simplicity I have used h2 in memory database(Also I have tested it on PostgreSQL) but changing our database is just a matter of changing 
+configuration in application.properties file.
+
+It will be better to provide schema for the database instead of letting JPA create it automatically.
 
 I did not use separate branch for each feature, and I worked on master branch. In real situation I always
 create separate branch for each feature.
@@ -26,14 +40,21 @@ create separate branch for each feature.
 ## Validation
 
 Apart from other validations we have strict validation for creating Item in a category. Item should have all
-required attribute in that category And types of values for each of ItemAttribute for Item should adhere to 
-type of corresponding attribute, no item can be saved if any constraint violated. AttributeValidationManager is written
-in a way that make attribute validation based on their metadata very easy ann it can be extended.
+required attribute in that category and types of values for each of ItemAttribute for Item should adhere to 
+type of corresponding attribute in category, no item can be saved if any constraint violated. AttributeValidationManager is implemented
+in a way that make attribute validation based on their metadata very easy, and it can be extended.
+AttributeValidationManager use injected AttributeValidators to validate attributes based on different criteria, so developer
+can add her own AttributeValidator to validate attribute on arbitrary criteria. Right now there is only one
+AttributeValidator implementation which validate attributes based on their type(ItemAttributeValueTypeValidator).
 
-ValueTypes in our system is just an Enum in Java (although we can change it in the future), defining new valueType is
+in order to be more flexible, ItemValueTypeValidator itself does not validate attributes and only delegates to
+valueTypeValidator for validation. So developer can add her own ValueTypeValidator to validate new ValueTypes defined 
+in the system.
+
+ValueTypes in our system is just an enum in Java (although we can change it in the future), defining new valueType is
 just a matter of adding new type to that enum. Each time we define new ValueType we should define its validator 
 by implementing ValueTypeValidator Interface. If we want to save value for valueType that has no associated valueType
-NoValueTypeValidator exception will be thrown. In the future we can also check existence of Validator for each valueType
+NoValueTypeValidatorException will be thrown. In the future we can also check existence of Validator for each valueType
 during startup or simple test case, but this should be considered on crating new item too.
 
 ## How to run
@@ -62,7 +83,7 @@ of the response in my Cucumber features. It would be great to test them too.
 
 I am also used to create separate branch for each feature but here for simplicity I worked on master branch.
 
-Better Response status code handling.
+Better Response status code handling
 
 Sometimes I try to consider other approaches like document based database or NoSql depending on the requirements.
 
@@ -70,7 +91,7 @@ To my mind we can Also have more Unit Tests to make sure each individual unit wo
 
 Considering MapStruct for Converting DTOs to entity would be great. 
 
-We should Think about locking mechanist to ensure no data loss in some parts.
+We should think about locking mechanist to ensure no data loss in some parts.
 
 How we want to generate report from our data.
 
