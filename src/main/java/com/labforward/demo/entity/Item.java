@@ -46,6 +46,11 @@ public class Item {
         itemAttribute.setItem(this);
     }
 
+    public void removeItemAttribute(ItemAttribute itemAttribute) {
+        itemAttributes.remove(itemAttribute);
+        itemAttribute.setItem(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
