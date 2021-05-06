@@ -6,6 +6,7 @@ import com.labforward.demo.entity.AttributeType;
 import com.labforward.demo.entity.Category;
 import com.labforward.demo.exception.AttributeAlreadyExistException;
 import com.labforward.demo.exception.ResourceNotFoundException;
+import com.labforward.demo.exceptionhandler.ErrorMessage;
 import com.labforward.demo.repository.AttributeRepository;
 import com.labforward.demo.repository.AttributeTypeRepository;
 import com.labforward.demo.repository.CategoryRepository;
@@ -13,13 +14,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -76,6 +82,20 @@ public final class CategoryAttributeController {
     private Category getCategory(@PathVariable long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("category not found"));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AttributeAlreadyExistException.class)
+    public ErrorMessage handleAttributeAlreadyExistException(WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("invalid request", "attribute with the same name exist in this category");
+        ErrorMessage errorMessage = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                new Date(),
+                "",
+                request.getDescription(false));
+        errorMessage.setErrors(errors);
+        return errorMessage;
     }
 
 }
