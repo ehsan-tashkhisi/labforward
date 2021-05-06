@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -67,17 +69,16 @@ public class ItemService {
         item.setName(itemDto.getName());
         Map<Long, Attribute> categoryAttributes = getCategoryAttributesMap(item.getCategory());
         Map<Long, ItemAttribute> itemAttributes = getItemAttributesMap(item);
-        Item updatedItem = new Item();
-        updatedItem.setId(item.getId());
-        updatedItem.setName(itemDto.getName());
-        updatedItem.setCategory(item.getCategory());
+        List<ItemAttribute> newAttributes = new ArrayList<>();
         itemDto.getItemAttributes().forEach(a -> {
             ItemAttribute itemAttribute = itemAttributes.getOrDefault(a.getAttributeId(), new ItemAttribute());
             itemAttribute.setValue(a.getValue());
             itemAttribute.setAttribute(categoryAttributes.get(a.getAttributeId()));
-            updatedItem.addItemAttribute(itemAttribute);
+            newAttributes.add(itemAttribute);
         });
-        return itemRepository.save(updatedItem);
+        itemAttributes.values().forEach(item::removeItemAttribute);
+        newAttributes.forEach(item::addItemAttribute);
+        return item;
     }
 
     private Map<Long, ItemAttribute> getItemAttributesMap(Item item) {
