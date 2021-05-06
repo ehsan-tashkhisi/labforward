@@ -1,31 +1,46 @@
 # How it works
 
 This is the sample project for managing different kinds of items with different categories in Labforward. Each item
-belongs to a category and can have attributes in that category. We should first define AttributeTypes which has a
-valueType (eg:INTEGER, STRING, DOUBLE,...) and a unitType (eg:METER, DOLOR, ...) (using API grouped as AttributeTypes). 
-then we define Category with specific name, after that we add attributes(with AttributeTypes we defined earlier) to that category
-(using API grouped as Category Attributes) Then After we add item into that category(Using API grouped as Item).
-Item's Category can not be changed during its lifetime so each item can belongs only to one category during its lifetime.
-Some constrains are not in place for future changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, 
-so it has its own primary key. On the other hand AttributeType is better not to be exposed to the end users,
-and I did not handle their response code in the best way. The instances of this entity is better to be created by administrator
-and Developers.
-In this data model all values of valueType are stored in varchar but validation is in place in our application, 
-so all valueType will be saved in their valid format but indexing and searching this value will be difficult in the future we can
-define separate tables for each ValueType, however, we should consider all constraints in that case.
+belongs to a category and can only have attributes in that category. In order to create an item from scratch we should
+call APIs in specific sequence. After running the application and opening swagger-ui in your browser (as described in
+how to run section in the following) you can see APIs are grouped and shown in appropriate order.
 
-Special care should be taken on when we want to add attribute to Category. We should decide to let the user add
-attribute to the category even after an item is created for that category, or we can only add attribute to the category
-only if it has no item. Right now we let the user add attribute to the category even when there is an item in that 
-category. This lets some item in our category to not have some of required item, however, it gives us some flexibility.
-We can also have default value for those attribute in the future or even don't let the user add attribute to the category
-that already has item in it.
+### Here is the complete flow to create an Item from scratch.
 
-For updating item right now we don't have any HTTP PATCH like operation, in other words we don't support updating
-the item partially. We have provided PUT operation, so the clients of our API should provide all the
-attributes for the item being updated in the body of the request, and if she does not provide all required attributes for 
-item in associated category, 404 bad request with corresponding errors in the body will returns. 
-In the future we can support HTTP PATCH operation for partial modification.
+* First you should define AttributeTypes which has a valueType (eg:INTEGER, STRING, DOUBLE,...) and a unitType (eg:
+  METER, DOLOR, ...) (using a POST request to the API grouped as AttributeTypes).
+
+* Then we define category with specific name (using a POST request to the API grouped as Categories).
+
+* Then that we add attributes (using attributeTypeId of the AttributeTypes we defined earlier) to that category (using a
+  POST request to the API grouped as Category Attributes)
+
+* Then after we add an item into that category (using a POST request to the API grouped as Category Items).
+
+* Updating an Item can be done using a PUT request to the API grouped as Items.
+
+Item's Category can not be changed during its lifetime so each item can belongs only to one category during its
+lifetime. This lifecycle dependency is shown in the url of our API, for instance for creating item in category with id:1
+we will make a POST request to the following URL /api/categories/1/items/. Some constrains are not in place for future
+changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, so it has its own
+primary key. On the other hand AttributeType is better not to be exposed to the end users, and I did not handle their
+response code in the best way. The instances of this entity is better to be created by administrator and Developers. In
+this data model all values of valueType are stored in varchar but validation is in place in our application, so all
+valueType will be saved in their valid format but indexing and searching this value will be difficult in the future we
+can define separate tables for each ValueType, however, we should consider all constraints in that case.
+
+Special care should be taken on when we want to add attribute to a category. We should decide whether we want to let the
+user add attribute to the category even after an item is created for that category, or we can only add attribute to the
+category only if it has no item. Right now we let the user add attribute to the category even when there is an item in
+that category. This lets some item in our category to not have some of required item, however, it gives us some
+flexibility. We can also have default value for those attribute in the future or even don't let the user add attribute
+to the category that already has item in it.
+
+For updating item right now we don't have any HTTP PATCH like operation, in other words we don't support updating the
+item partially. We have provided PUT operation, so the clients of our API should provide all the attributes for the item
+being updated in the body of the request, and if she does not provide all required attributes for item in associated
+category, 404 bad request with corresponding errors in the body will returns. In the future we can support HTTP PATCH
+operation for partial modification.
 
 ![alt text](https://www.linkpicture.com/q/data-model.png)
 
@@ -104,9 +119,9 @@ Having Separate table for valueTypes, is that good?
 Developing using BDD methodology I have defined some scenario like below that are passed.
 I believe that nothing is more descriptive than putting them here:
 
-# Feature: Create AttributeType
+### Feature: Create AttributeType
 
-Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
+    Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
 
     Given user wants to create an attributeType with following properties
       |  name            | valueType | unitType |
@@ -116,7 +131,7 @@ Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
     Then the save 'IS SUCCESSFUL'
 
 
-Scenario Outline: <testCase> <expectedResult>
+    Scenario Outline: <testCase> <expectedResult>
 
     Given user wants to create an attributeType with following properties
       |  name  |  valueType  |  unitType  |
@@ -130,9 +145,9 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       NAME               | FAILS          |               | INTEGER   | METER    |
       | WITH ALL REQUIRED FIELDS         | IS SUCCESSFUL  | Category1     | DOUBLE    | DOLOR    |
 
-# Feature: Create Category
+### Feature: Create Category
 
-Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
+    Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
 
     Given user wants to create a category with following property
       |  name      |
@@ -142,7 +157,7 @@ Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
     Then the save 'IS SUCCESSFUL'
 
 
-Scenario Outline: <testCase> <expectedResult>
+    Scenario Outline: <testCase> <expectedResult>
 
     Given user wants to create an attribute with the following properties
       |  name  |
@@ -156,16 +171,19 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       NAME               | FAILS          |               |
       | WITH ALL REQUIRED FIELDS         | IS SUCCESSFUL  | Category1     |
 
-# Feature: Add new Attribute to Category
+### Feature: Add new Attribute to Category
 
     Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
+    
     Given following types exist in the system
     | name  | valueType | unitType |
     | type1 | INTEGER   | METER    |
     | type2 | STRING    | DOLOR    |
+    
     Given there is a category with id:1 and following property
     | name      |
     | category1 |
+    
     Given user wants to create an attribute with the following properties
     |  name      | attributeTypeId | required |
     | Attribute1 | 1               | true     |
@@ -179,9 +197,11 @@ Scenario Outline: <testCase> <expectedResult>
     | name  | valueType | unitType |
     | type1 | INTEGER   | METER    |
     | type2 | STRING    | DOLOR    |
+    
     Given there is a category with id:1 and following property
     | name      |
     | category1 |
+    
     Given user wants to create an attribute with the following properties
     |  name  |  attributeTypeId  |  required  |
     | <name> | <attributeTypeId> | <required> |
@@ -195,7 +215,7 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       ATTRIBUTE TYPE ID  | FAILS          | Attribute1    |                 | true     |
       | WITH ALL REQUIRED FIELDS         | IS SUCCESSFUL  | Attribute2    | 2               | true     |
 
-Scenario Outline: <testCase> <expectedResult>
+    Scenario Outline: <testCase> <expectedResult>
 
     Given user wants to create an attribute with the following properties
       |  name  |  attributeTypeId  |  required  |
@@ -210,7 +230,7 @@ Scenario Outline: <testCase> <expectedResult>
       | WITHOUT       ATTRIBUTE TYPE ID  | FAILS          | Attribute1    |                 | true     |
       | WITH ALL REQUIRED FIELDS         | FAILS          | Attribute2    | 2               | true     |
 
-# Feature: Create new Item
+### Feature: Create new Item
 
     Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
     Given following types exist in the system
@@ -241,7 +261,7 @@ Scenario Outline: <testCase> <expectedResult>
     Then the save 'IS SUCCESSFUL'
 
 
-Scenario Outline: <testCase> <expectedResult>
+    Scenario Outline: <testCase> <expectedResult>
 
     Given following types exist in the system
       | name  | valueType | unitType |
@@ -277,7 +297,7 @@ Scenario Outline: <testCase> <expectedResult>
       | WITH          REQUIRED ATTRIBUTE     | IS SUCCESSFUL  | 1            | 100      | 2            |        |
       | WITH          ALL ATTRIBUTE          | IS SUCCESSFUL  | 1            | 123456   | 2            | title  |
 
-# Feature: Update an Item
+### Feature: Update an Item
 
     Scenario: WITH ALL REQUIRED FIELDS IS SUCCESSFUL
     Given following types exist in the system
@@ -316,7 +336,7 @@ Scenario Outline: <testCase> <expectedResult>
     When user updates the item with id:1, 'REQUIRED FIELDS IS SUCCESSFUL'
     Then the save 'IS SUCCESSFUL'
 
-Scenario Outline: <testCase> <expectedResult>
+    Scenario Outline: <testCase> <expectedResult>
 
     Given following types exist in the system
       | name  | valueType | unitType |
