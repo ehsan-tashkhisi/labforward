@@ -45,7 +45,7 @@ public class AttributeTypeController {
     @Operation(summary = "Create new attributeType")
     public ResponseEntity<AttributeType> create(@Valid @RequestBody AttributeType attributeType) {
         AttributeType savedAttribute = attributeTypeRepository.save(attributeType);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(savedAttribute.getId()).toUri();
         return ResponseEntity.created(location).body(savedAttribute);
     }

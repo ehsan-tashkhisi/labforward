@@ -44,8 +44,8 @@ public final class CategoryItemController {
     public ResponseEntity<Item> createItem(@PathVariable long id, @RequestBody ItemDto itemDto) {
         Category category = getCategory(id);
         Item item = itemService.createItem(category, itemDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/attributes/{id}")
-                .buildAndExpand(id).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/items/{id}")
+                .buildAndExpand(item.getId()).toUri();
         return ResponseEntity.created(location).body(item);
     }
 

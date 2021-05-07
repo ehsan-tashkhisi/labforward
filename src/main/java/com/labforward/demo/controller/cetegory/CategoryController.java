@@ -54,8 +54,8 @@ public final class CategoryController {
     public ResponseEntity<Category> updateCategory(@PathVariable long id, Category category) {
         Category savedCategory = getCategory(id);
         category.setId(savedCategory.getId());
-        categoryRepository.save(savedCategory);
-        return ResponseEntity.noContent().build();
+        Category updatedCategory = categoryRepository.save(savedCategory);
+        return ResponseEntity.ok(updatedCategory);
     }
 
     private Category getCategory(@PathVariable long id) {

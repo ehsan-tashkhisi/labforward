@@ -67,8 +67,8 @@ public final class CategoryAttributeController {
         attribute.setAttributeType(attributeType);
         attribute.setRequired(attributeDto.isRequired());
         Attribute savedAttribute = attributeRepository.save(attribute);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}")
-                .buildAndExpand(attribute.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/attributes/{id}")
+                .buildAndExpand(savedAttribute.getId()).toUri();
         return ResponseEntity.created(location).body(savedAttribute);
     }
 
