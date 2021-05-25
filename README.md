@@ -7,30 +7,30 @@ how to run section in the following) you can see APIs are grouped and shown in a
 
 ### Here is the complete flow to create an Item from scratch.
 
-* First you should define AttributeTypes which has a valueType (eg:INTEGER, STRING, DOUBLE,...) and a unitType (eg:
+* First we should define AttributeTypes which has a valueType (eg:INTEGER, STRING, DOUBLE,...) and a unitType (eg:
   METER, DOLOR, ...) (using a POST request to the API grouped as AttributeTypes).
 
-* Then we define category with specific name (using a POST request to the API grouped as Categories).
+* Then we define Category with specific name (using a POST request to the API grouped as Categories).
 
-* Then that we add attributes (using attributeTypeId of the AttributeTypes we defined earlier) to that category (using a
+* Then after we add attributes (using attributeTypeId of the AttributeTypes we defined earlier) to that category (using a
   POST request to the API grouped as Category Attributes)
 
-* Then after we add an item into that category (using a POST request to the API grouped as Category Items).
+* Then after we add an Item into that category (using a POST request to the API grouped as Category Items).
 
-* Updating an Item can be done using a PUT request to the API grouped as Items.
+* Updating an item can be done using a PUT request to the API grouped as Items.
 
-Item's Category can not be changed during its lifetime so each item can belongs only to one category during its
+Item's category can not be changed during its lifetime so each item can belongs only to one category during its
 lifetime. This lifecycle dependency is shown in the url of our API, for instance for creating item in category with id:1
 we will make a POST request to the following URL /api/categories/1/items/. Some constrains are not in place for future
 changes, for instance in the future maybe we need to maintain previous value for each itemAttributes, so it has its own
 primary key. On the other hand AttributeType is better not to be exposed to the end users, and I did not handle their
-response code in the best way. The instances of this entity is better to be created by administrator and Developers. In
+response code in the best way. The instances of this entity is better to be created by administrator and developers. In
 this data model all values of valueType are stored in varchar but validation is in place in our application, so all
-valueType will be saved in their valid format but indexing and searching this value will be difficult in the future we
+ValueType will be saved in their valid format but indexing and searching this value will be difficult in the future we
 can define separate tables for each ValueType, however, we should consider all constraints in that case.
 
 Special care should be taken on when we want to add attribute to a category. We should decide whether we want to let the
-user add attribute to the category even after an item is created for that category, or we can only add attribute to the
+user add attribute to the Category even after an Item is created for that category, or we can only add attribute to the
 category only if it has no item. Right now we let the user add attribute to the category even when there is an item in
 that category. This lets some item in our category to not have some of required item, however, it gives us some
 flexibility. We can also have default value for those attribute in the future or even don't let the user add attribute
@@ -39,13 +39,13 @@ to the category that already has item in it.
 For updating item right now we don't have any HTTP PATCH like operation, in other words we don't support updating the
 item partially. We have provided PUT operation, so the clients of our API should provide all the attributes for the item
 being updated in the body of the request, and if she does not provide all required attributes for item in associated
-category, 404 bad request with corresponding errors in the body will returns. In the future we can support HTTP PATCH
-operation for partial modification.
+category, 400 bad request with corresponding errors in the body will returns. In the future we can support HTTP PATCH
+operation for partial update.
 
-![alt text](https://www.linkpicture.com/q/data-model.png)
+![image 4](https://github.com/ehsan-tashkhisi/labforward-report/blob/master/images/data-model.png?raw=true)
 
-For the sake of simplicity I have used h2 in memory database(Also I have tested it on PostgreSQL) but changing our database is just a matter of changing 
-configuration in application.properties file.
+For the sake of simplicity I have used h2 in memory database(Also I have tested it on PostgreSQL) but changing our
+database is just a matter of changing configuration in application.properties file.
 
 It will be better to provide schema for the database instead of letting JPA create it automatically.
 
@@ -54,22 +54,22 @@ create separate branch for each feature.
 
 ## Validation
 
-Apart from other validations we have strict validation for creating Item in a category. Item should have all
-required attribute in that category and types of values for each of ItemAttribute for Item should adhere to 
-type of corresponding attribute in category, no item can be saved if any constraint violated. AttributeValidationManager is implemented
-in a way that make attribute validation based on their metadata very easy, and it can be extended.
-AttributeValidationManager use injected AttributeValidators to validate attributes based on different criteria, so developer
-can add her own AttributeValidator to validate attribute on arbitrary criteria. Right now there is only one
-AttributeValidator implementation which validate attributes based on their type(ItemAttributeValueTypeValidator).
+Apart from other validations we have strict validation for creating Item in a Category. Item should have all required
+attributes in that category and types of values for each of ItemAttribute for Item should adhere to type of
+corresponding attribute in the category, no item can be saved if any constraint violated. AttributeValidationManager is
+implemented in a way that make attribute validation based on their metadata very easy, and it can be extended.
+AttributeValidationManager use injected AttributeValidators to validate attributes based on different criteria, so
+developer can add her own AttributeValidator to validate attribute on arbitrary criteria. Right now there is only one
+ItemAttributeValidator implementation which validate attributes based on their type(ItemAttributeValueTypeValidator).
 
-in order to be more flexible, ItemValueTypeValidator itself does not validate attributes and only delegates to
-valueTypeValidator for validation. So developer can add her own ValueTypeValidator to validate new ValueTypes defined 
-in the system.
+In order to be more flexible, ItemAttributeValueTypeValidator itself does not validate valueTypes of attributes and only
+delegates to valueTypeValidators for validation. So developer can add her own ValueTypeValidator to validate new
+ValueTypes defined in the system.
 
-ValueTypes in our system is just an enum in Java (although we can change it in the future), defining new valueType is
+ValueTypes in our system is just an enum in Java (although we can change it in the future), defining new ValueType is
 just a matter of adding new type to that enum. Each time we define new ValueType we should define its validator 
-by implementing ValueTypeValidator Interface. If we want to save value for valueType that has no associated valueType
-NoValueTypeValidatorException will be thrown. In the future we can also check existence of Validator for each valueType
+by implementing ValueTypeValidator Interface. If we want to save value for valueType that has no associated ValueType
+NoValueTypeValidatorException will be thrown. In the future we can also check existence of Validator for each ValueType
 during startup or simple test case, but this should be considered on crating new item too.
 
 ## How to run
@@ -89,7 +89,7 @@ specification for its API under http://localhost:8080/v3/api-docs/
 Also, for testing and working with the api you can use swagger-ui which is available 
 in http://localhost:8080/swagger-ui.html.
 
-![alt text](https://www.linkpicture.com/q/swagger.png)
+![swagger](https://github.com/ehsan-tashkhisi/labforward-report/blob/master/images/swagger.png?raw=true)
 
 # Future works
 Cucumber is great for BDD, but it does not work well for API testing if I had enough time I would use 
@@ -98,25 +98,25 @@ of the response in my Cucumber features. It would be great to test them too.
 
 I am also used to create separate branch for each feature but here for simplicity I worked on master branch.
 
-Better Response status code handling
+Better response status code handling
 
 Sometimes I try to consider other approaches like document based database or NoSql depending on the requirements.
 
-To my mind we can Also have more Unit Tests to make sure each individual unit works properly.
+To my mind we can also have more Unit Tests to make sure each individual unit works properly.
 
-Considering MapStruct for Converting DTOs to entity would be great. 
+Considering MapStruct for converting DTOs to entity would be great. 
 
 We should think about locking mechanist to ensure no data loss in some parts.
 
 How we want to generate report from our data.
 
-We should have better approach for running test in maven. Right now I am just running them in intellij IDEA,
+We should have better approach for running test in maven. Right now I am just running them in IntelliJ IDEA,
 but we should have plan to group tests to be run in different stages in our CI/CD.
 
-Having Separate table for valueTypes, is that good?
+Having separate table for valueTypes, is that good?
 
 # Cucumber Test Features
-Developing using BDD methodology I have defined some scenario like below that are passed.
+Developing using BDD methodology I have defined some scenarios like below that are passed.
 I believe that nothing is more descriptive than putting them here:
 
 ### Feature: Create AttributeType
@@ -388,8 +388,8 @@ You can see Complete report in the following link:
 
 https://ehsan-tashkhisi.github.io/
 
-![alt text](https://www.linkpicture.com/q/cucumber-scenario.png)
+![cucumber-scenario](https://github.com/ehsan-tashkhisi/labforward-report/blob/master/images/cucumber-scenario.png?raw=true)
 
-![alt text](https://www.linkpicture.com/q/scnario-chart.png)
+![scenario-chart](https://github.com/ehsan-tashkhisi/labforward-report/blob/master/images/scenario-chart.png?raw=true)
 
-![alt text](https://www.linkpicture.com/q/cucumber-scenario-test.png)
+![cucumber-scenario-test](https://github.com/ehsan-tashkhisi/labforward-report/blob/master/images/cucumber-scenario-test.png?raw=true)
